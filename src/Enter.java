@@ -148,23 +148,19 @@ public class Enter {
                 15
         );
         swipeElementToLeft(
-                By.xpath("//*[@resource-id ='org.wikipedia:id/item_title'][@text='Java']"),
+                By.xpath("//*[(@text='Java')]"),
                 "cannot find saved article"
         );
         waitForElementPresent(
-                By.xpath("//*[@resource-id ='org.wikipedia:id/item_title'][@text='Kotlin']"),
-                "Cant find article title ",
+                By.xpath("//*[contains (@text,'Kotlin')]"),
+                "Cant find one article  ",
                 15
         );
         waitForElementAndClick(
-                By.id("org.wikipedia:id/page_list_item_title"),
+                By.xpath("//*[contains (@text,'Kotlin')]"),
                 "Can not click on saved page",
                 10
         );
-
-
-
-
 
 
     }
@@ -203,22 +199,31 @@ public class Enter {
         element.clear();
         return element;
     }
-
-        protected void swipeElementToLeft(By by, String error_message){
+    private boolean waitFormenutoRender(By by, String error_message, long timeoutInsecond) {
+        WebDriverWait wait = new WebDriverWait(driver, timeoutInsecond);
+        wait.withMessage(error_message + "\n");
+        WebElement element = wait.until(ExpectedConditions.presenceOfElementLocated(by));
+        element.click();
+        return wait.until(
+                ExpectedConditions.invisibilityOfElementLocated(by)
+        );
+    }
+        protected void swipeElementToLeft(By by, String error_message) {
             WebElement element = waitForElementPresent(by,
                     error_message,
-                    10);
+                    15);
 
             int left_x = element.getLocation().getX();
             int right_x = left_x + element.getSize().getWidth();
             int upper_y = element.getLocation().getY();
-            int lower_y = upper_y = element.getSize().getHeight();
+            int lower_y = upper_y + element.getSize().getHeight();
             int middle_y = (upper_y + lower_y) / 2;
+
 
             TouchAction action = new TouchAction(driver);
             action
                     .press(right_x, middle_y)
-                    .waitAction(300)
+                    .waitAction(200)
                     .moveTo(left_x, middle_y)
                     .release().perform();
 
